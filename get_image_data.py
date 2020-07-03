@@ -1,4 +1,5 @@
 # This is the module for getting image data in braille
+# That is the objects and text present in the image
 
 import re
 import cv2
