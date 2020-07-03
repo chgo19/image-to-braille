@@ -26,12 +26,14 @@ PATH_TO_CLASSES = os.path.join(ASSETS_DIR, "yolov3.txt")
 
 def filter_text(text: str):
     text = text.strip().upper()
+    # returns filtered text
     return re.sub(FILTER, '', text)
 
 
 def text_to_braille(text: str):
     text = filter_text(text)
-    return text.translate(TRANSTAB)
+    # returns filtered and translated text
+    return text, text.translate(TRANSTAB)
 
 
 # object detection hereafter untill specified.
@@ -55,7 +57,7 @@ def draw_prediction(img, class_id, confidence, x, y, x_plus_w, y_plus_h, classes
     cv2.putText(img, label, (x-10,y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
 
-def get_objects(image_path, config=PATH_TO_CONFIG, weights=PATH_TO_WEIGHTS, classes_path=PATH_TO_CLASSES):
+def get_objects_from_image(image_path, config=PATH_TO_CONFIG, weights=PATH_TO_WEIGHTS, classes_path=PATH_TO_CLASSES):
 
     image = cv2.imread(image_path)
 
@@ -105,7 +107,7 @@ def get_objects(image_path, config=PATH_TO_CONFIG, weights=PATH_TO_WEIGHTS, clas
     indices = cv2.dnn.NMSBoxes(boxes, confidences, conf_threshold, nms_threshold)
 
     class_num = defaultdict(int)
-    print("Objects:")
+    print("\n----------- Objects -----------")
     for i in indices:
         i = i[0]
         box = boxes[i]
@@ -138,3 +140,20 @@ def get_objects(image_path, config=PATH_TO_CONFIG, weights=PATH_TO_WEIGHTS, clas
     print()
     # return image with boxes
     return image, objects
+
+
+def get_text_from_image(image_path):
+    text = pytesseract.image_to_string(Image.open(image_path))
+    print("----------- Detected Text -----------")
+    print(text +"\n")
+
+    ftext, btext = text_to_braille(text)
+
+    print("----------- Filtered Text -----------")
+    print(ftext +"\n")
+
+    print("----------- Converted to Braille Text -----------")
+    print(btext +"\n")
+
+    return text, ftext, btext
+
