@@ -4,6 +4,7 @@
 import os
 CURRENT_DIR = os.getcwd()
 ASSETS_DIR = os.path.join(CURRENT_DIR, "assets")
+MEDIA_DIR = os.path.join(CURRENT_DIR, "media")
 
 import re
 import cv2
@@ -126,7 +127,7 @@ def get_objects_from_image(image_path, config=PATH_TO_CONFIG, weights=PATH_TO_WE
 
 
     # writing image
-    dimg_path = os.path.join(ASSETS_DIR, "detected-objects.jpg")
+    dimg_path = os.path.join(MEDIA_DIR, "detected-objects.jpg")
     cv2.imwrite(dimg_path, image)
     # cv2.destroyAllWindows()
 
