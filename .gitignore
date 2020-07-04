@@ -2,6 +2,7 @@
 *.weights
 .vscode
 imgtb-venv/
+media/
 
 ### Python template
 # Byte-compiled / optimized / DLL files
