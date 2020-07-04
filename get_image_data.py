@@ -135,7 +135,7 @@ def get_objects_from_image(image_path, config=PATH_TO_CONFIG, weights=PATH_TO_WE
     # making objects list for writing to file
     objects = []
     for i, n in class_num.items():
-        objects.append(f"{n} {i}S".upper())
+        objects.append(f"{n} {i}{'S' if n>1 else ''}".upper())
     print(objects)
 
     print()
@@ -163,27 +163,29 @@ def get_text_from_image(image_path):
 
 def capture_image():
     img_name = "captured-image.png"
-    img_path = os.path.join(MEDIA_DIR, img_name)
+    img_path = ''
     cam = cv2.VideoCapture(0)
 
-    while True:
+    window_name = "Press SPACE to capture Image, ESC to Cancel."
+    cv2.namedWindow(window_name)
+
+    while cv2.getWindowProperty(window_name, 0) >= 0:
         ret, frame = cam.read()
         if not ret:
             print("Failed to grab frame!")
-            img_path = ''
             break
 
-        cv2.imshow("Press SPACE to capture Image.", frame)
+        cv2.imshow(window_name, frame)
 
         k = cv2.waitKey(1)
         if k%256 == 27:
             # ESC pressed
             print("Pressed ESCAPE, closing...")
-            img_path = ''
             break
 
         elif k%256 == 32:
             # SPACE pressed
+            img_path = os.path.join(MEDIA_DIR, img_name)
             cv2.imwrite(img_path, frame)
             print(f"{img_path} written!")
             break

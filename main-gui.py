@@ -57,7 +57,7 @@ image_layout = [[sg.Image(background_color="grey", size=IMG_SIZE, key="-IMAGE-",
                  sg.FileBrowse("Select Image", size=IMG_BUTTON_SIZE, file_types=(
                      ("Image Files", "*.png;*.jpg"),), target="-FILE-", font="default 12 bold"),
                  sg.Button("Capture Image", size=IMG_BUTTON_SIZE,
-                           font="default 12 bold"),
+                           font="default 12 bold", key="-CAPIMG-", enable_events=True),
                  sg.Button("Detect", size=IMG_BUTTON_SIZE, key="-DETECT-", enable_events=True, font="default 12 bold")],
                 [sg.Text("Please wait while Detecting Text and Objects...", background_color="yellow", size=(50, None), justification='c'
                 , text_color="red", border_width=4, visible=False, key="-WAIT-")]]
@@ -87,6 +87,7 @@ layout = [
 
 window = sg.Window('Image to Braille', layout, grab_anywhere=True)
 img_path = ""
+file_path = ""
 
 while True:  # Event Loop
     event, values = window.read()
@@ -96,14 +97,31 @@ while True:  # Event Loop
 
     if event == "-FILE-":
         try:
-            if img_path != values["-FILE-"]:
+            if file_path != values["-FILE-"]:
                 img_path = values["-FILE-"]
+                file_path = img_path
                 img_data = convert_to_bytes(img_path, IMG_SIZE)
                 window['-IMAGE-'].update(data=img_data)
                 ftext, btext = DISPLAY_TEXT, BRAILLE_DISPLAY_TEXT
                 fobj_text, bobj_text = DISPLAY_TEXT, BRAILLE_DISPLAY_TEXT
                 window['-FTEXT-'].update(ftext)
                 window['-BTEXT-'].update(btext)
+        except:
+            pass
+
+    if event == "-CAPIMG-":
+        try:
+            cap_img_path = gimd.capture_image()
+            if cap_img_path:
+                img_path = cap_img_path
+                img_data = convert_to_bytes(cap_img_path, IMG_SIZE)
+                window['-IMAGE-'].update(data=img_data)
+                ftext, btext = DISPLAY_TEXT, BRAILLE_DISPLAY_TEXT
+                fobj_text, bobj_text = DISPLAY_TEXT, BRAILLE_DISPLAY_TEXT
+                window['-FTEXT-'].update(ftext)
+                window['-BTEXT-'].update(btext)
+            else:
+                sg.popup_ok("No Image Captured!", keep_on_top=True)
         except:
             pass
 
