@@ -161,3 +161,35 @@ def get_text_from_image(image_path):
 
     return text, ftext, btext
 
+def capture_image():
+    img_name = "captured-image.png"
+    img_path = os.path.join(MEDIA_DIR, img_name)
+    cam = cv2.VideoCapture(0)
+
+    while True:
+        ret, frame = cam.read()
+        if not ret:
+            print("Failed to grab frame!")
+            img_path = ''
+            break
+
+        cv2.imshow("Press SPACE to capture Image.", frame)
+
+        k = cv2.waitKey(1)
+        if k%256 == 27:
+            # ESC pressed
+            print("Pressed ESCAPE, closing...")
+            img_path = ''
+            break
+
+        elif k%256 == 32:
+            # SPACE pressed
+            cv2.imwrite(img_path, frame)
+            print(f"{img_path} written!")
+            break
+
+    cam.release()
+
+    cv2.destroyAllWindows()
+
+    return img_path
