@@ -87,7 +87,6 @@ layout = [
 
 window = sg.Window('Image to Braille', layout, grab_anywhere=True)
 img_path = ""
-file_path = ""
 
 while True:  # Event Loop
     event, values = window.read()
@@ -97,13 +96,13 @@ while True:  # Event Loop
 
     if event == "-FILE-":
         try:
-            if file_path != values["-FILE-"]:
+            if values["-FILE-"]:
                 img_path = values["-FILE-"]
-                file_path = img_path
                 img_data = convert_to_bytes(img_path, IMG_SIZE)
                 window['-IMAGE-'].update(data=img_data)
                 ftext, btext = DISPLAY_TEXT, BRAILLE_DISPLAY_TEXT
                 fobj_text, bobj_text = DISPLAY_TEXT, BRAILLE_DISPLAY_TEXT
+                window['-FILE-'].update('')
                 window['-FTEXT-'].update(ftext)
                 window['-BTEXT-'].update(btext)
         except:
