@@ -139,7 +139,7 @@ def get_objects_from_image(image_path, config=PATH_TO_CONFIG, weights=PATH_TO_WE
 
     print()
     # return image with boxes
-    return image, objects
+    return dimg_path, objects
 
 
 def get_text_from_image(image_path):
@@ -147,7 +147,10 @@ def get_text_from_image(image_path):
     print("----------- Detected Text -----------")
     print(text +"\n")
 
+    text = "\n".join([i for i in text.split("\n") if i])
     ftext, btext = text_to_braille(text)
+    if not ftext:
+        ftext, btext = text_to_braille("No Text Detected")
 
     print("----------- Filtered Text -----------")
     print(ftext +"\n")
