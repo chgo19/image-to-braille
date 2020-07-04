@@ -59,8 +59,7 @@ image_layout = [[sg.Image(background_color="grey", size=IMG_SIZE, key="-IMAGE-",
                  sg.Button("Capture Image", size=IMG_BUTTON_SIZE,
                            font="default 12 bold", key="-CAPIMG-", enable_events=True),
                  sg.Button("Detect", size=IMG_BUTTON_SIZE, key="-DETECT-", enable_events=True, font="default 12 bold")],
-                [sg.Text("Please wait while Detecting Text and Objects...", background_color="yellow", size=(50, None), justification='c'
-                , text_color="red", border_width=4, visible=False, key="-WAIT-")]]
+                [sg.Text("Please wait while Detecting Text and Objects...", background_color="yellow", size=(50, None), justification='c', text_color="red", border_width=4, visible=False, key="-WAIT-")]]
 
 result_layout = [[sg.Text('Detection results', font="default 12 bold")],
                  [sg.Text('Click a button to see the corresponding result')],
@@ -119,16 +118,18 @@ while True:  # Event Loop
                 fobj_text, bobj_text = DISPLAY_TEXT, BRAILLE_DISPLAY_TEXT
                 window['-FTEXT-'].update(ftext)
                 window['-BTEXT-'].update(btext)
-            else:
-                sg.popup_ok("No Image Captured!", keep_on_top=True)
+            # else:
+            #     sg.popup_ok("No Image Captured!", keep_on_top=True)
         except:
             pass
 
     if event == "-DETECT-":
         try:
+            print(f"Image Path: {img_path}")
             window["-WAIT-"].update(visible=True)
             if img_path:
-                sg.popup_no_buttons("Please Wait...", no_titlebar=True, keep_on_top=True, auto_close=True, non_blocking=True, auto_close_duration=1)
+                sg.popup_no_buttons("Please Wait...", no_titlebar=True, keep_on_top=True,
+                                    auto_close=True, non_blocking=True, auto_close_duration=1)
             text, ftext, btext = gimd.get_text_from_image(img_path)
             dimg_path, objs = gimd.get_objects_from_image(img_path)
             fobj_text, bobj_text = gimd.text_to_braille(
@@ -141,7 +142,7 @@ while True:  # Event Loop
             sg.popup_ok("Detection Complete!", keep_on_top=True)
         except:
             window["-WAIT-"].update(visible=False)
-            sg.popup_ok("Please Select an Image first!", title="Error!", keep_on_top=True)
+            sg.popup_ok("Make sure you have selected a valid Image first.\nIf you did, make sure you have the following files\nin the currect directory as shown:\n./assets/yolov3.cfg\n./assets/yolov3.weights\n./assets/yolov3.txt - for classes", title="An Error occurred!", keep_on_top=True)
 
     if event == "-DOBJS-":
         try:

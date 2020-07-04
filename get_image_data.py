@@ -6,6 +6,9 @@ CURRENT_DIR = os.getcwd()
 ASSETS_DIR = os.path.join(CURRENT_DIR, "assets")
 MEDIA_DIR = os.path.join(CURRENT_DIR, "media")
 
+from pathlib import Path
+Path(MEDIA_DIR).mkdir(parents=True, exist_ok=True)
+
 import re
 import cv2
 
