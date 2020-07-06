@@ -59,7 +59,7 @@ image_layout = [[sg.Image(background_color="grey", size=IMG_SIZE, key="-IMAGE-",
                  sg.Button("Capture Image", size=IMG_BUTTON_SIZE,
                            font="default 12 bold", key="-CAPIMG-", enable_events=True),
                  sg.Button("Detect", size=IMG_BUTTON_SIZE, key="-DETECT-", enable_events=True, font="default 12 bold")],
-                [sg.Text("Please wait while Detecting Text and Objects...", background_color="yellow", size=(50, None), justification='c', text_color="red", border_width=4, visible=False, key="-WAIT-")]]
+                [sg.Text("Please select an image to continue", size=(50, None), justification='c', border_width=4, key="-WAIT-")]]
 
 result_layout = [[sg.Text('Detection results', font="default 12 bold")],
                  [sg.Text('Click a button to see the corresponding result')],
@@ -104,6 +104,7 @@ while True:  # Event Loop
                 window['-FILE-'].update('')
                 window['-FTEXT-'].update(ftext)
                 window['-BTEXT-'].update(btext)
+                window["-WAIT-"].update("Image selected, press Detect to continue.")
         except:
             pass
 
@@ -118,6 +119,7 @@ while True:  # Event Loop
                 fobj_text, bobj_text = DISPLAY_TEXT, BRAILLE_DISPLAY_TEXT
                 window['-FTEXT-'].update(ftext)
                 window['-BTEXT-'].update(btext)
+                window["-WAIT-"].update("Image captured, press Detect to continue.")
             # else:
             #     sg.popup_ok("No Image Captured!", keep_on_top=True)
         except:
@@ -126,10 +128,10 @@ while True:  # Event Loop
     if event == "-DETECT-":
         try:
             print(f"Image Path: {img_path}")
-            window["-WAIT-"].update(visible=True)
-            if img_path:
-                sg.popup_no_buttons("Please Wait...", no_titlebar=True, keep_on_top=True,
-                                    auto_close=True, non_blocking=True, auto_close_duration=1)
+            window["-WAIT-"].update("Please wait while Detecting Text and Objects...")
+            # if img_path:
+            #     sg.popup_no_buttons("Please Wait...", no_titlebar=True, keep_on_top=True,
+            #                         auto_close=True, non_blocking=True, auto_close_duration=1)
             text, ftext, btext = gimd.get_text_from_image(img_path)
             dimg_path, objs = gimd.get_objects_from_image(img_path)
             fobj_text, bobj_text = gimd.text_to_braille(
@@ -138,11 +140,11 @@ while True:  # Event Loop
             window['-IMAGE-'].update(data=img_data)
             window['-FTEXT-'].update(ftext)
             window['-BTEXT-'].update(btext)
-            window["-WAIT-"].update(visible=False)
-            sg.popup_ok("Detection Complete!", keep_on_top=True)
+            window["-WAIT-"].update("Detection Complete!")
+            # sg.popup_ok("Detection Complete!", keep_on_top=True)
         except:
-            window["-WAIT-"].update(visible=False)
-            sg.popup_ok("Make sure you have selected a valid Image first.\nIf you did, make sure you have the following files\nin the currect directory as shown:\n./assets/yolov3.cfg\n./assets/yolov3.weights\n./assets/yolov3.txt - for classes", title="An Error occurred!", keep_on_top=True)
+            window["-WAIT-"].update("Detection unsuccessful!")
+            sg.popup_ok("Make sure you have installed tesseract-ocr.\nIf you did, make sure you have the following files\nin the currect directory as shown:\n./assets/yolov3.cfg\n./assets/yolov3.weights\n./assets/yolov3.txt - for classes", title="An Error occurred!", keep_on_top=True)
 
     if event == "-DOBJS-":
         try:
@@ -160,9 +162,11 @@ while True:  # Event Loop
 
     if event == "-CPFTEXT-":
         pyperclip.copy(values["-FTEXT-"])
+        window["-WAIT-"].update("English Text Copied!")
 
     if event == "-CPBTEXT-":
         pyperclip.copy(values["-BTEXT-"])
+        window["-WAIT-"].update("Braille Text Copied!")
 
 
 window.close()
