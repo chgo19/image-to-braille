@@ -55,7 +55,7 @@ sg.theme(THEME)
 image_layout = [[sg.Image(background_color="grey", size=IMG_SIZE, key="-IMAGE-", pad=(10, 10))],
                 [sg.Input(key="-FILE-", enable_events=True, visible=False),
                  sg.FileBrowse("Select Image", size=IMG_BUTTON_SIZE, file_types=(
-                     ("Image Files", "*.png;*.jpg"),), target="-FILE-", font="default 12 bold"),
+                     ("Image Files", "*.png;*.jpg;*.jpeg"),), target="-FILE-", font="default 12 bold"),
                  sg.Button("Capture Image", size=IMG_BUTTON_SIZE,
                            font="default 12 bold", key="-CAPIMG-", enable_events=True),
                  sg.Button("Detect", size=IMG_BUTTON_SIZE, key="-DETECT-", enable_events=True, font="default 12 bold")],
