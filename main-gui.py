@@ -68,11 +68,11 @@ result_layout = [[sg.Text('Detection results', font="default 12 bold")],
                  [sg.HorizontalSeparator(pad=(10, 10))],
                  [sg.Text("Detection in English\n(Pre-Processed for conversion to Braille)"),
                   sg.Button("Copy", size=(6, None), key="-CPFTEXT-", enable_events=True)],
-                 [sg.Multiline(DISPLAY_TEXT, key='-FTEXT-', size=(None, 10))],
+                 [sg.Multiline(DISPLAY_TEXT, key='-FTEXT-', size=(None, 10), disabled=True)],
                  [sg.Text("Converted to Grade 1 Braille\n(utf-8 encoding)"),
                   sg.Button("Copy", size=(6, None), key="-CPBTEXT-", enable_events=True)],
                  [sg.Multiline(BRAILLE_DISPLAY_TEXT,
-                               key='-BTEXT-', size=(None, 10))],
+                               key='-BTEXT-', size=(None, 10), disabled=True)],
                  [sg.Button('Exit', size=(7, 1))],
                  [sg.Text("Capstone Project | Made by CPG-16", font="default 11", text_color="grey")]]
 
@@ -144,7 +144,7 @@ while True:  # Event Loop
             # sg.popup_ok("Detection Complete!", keep_on_top=True)
         except:
             window["-WAIT-"].update("Detection unsuccessful!")
-            sg.popup_ok("Make sure you have installed tesseract-ocr.\nIf you did, make sure you have the following files\nin the currect directory as shown:\n./assets/yolov3.cfg\n./assets/yolov3.weights\n./assets/yolov3.txt - for classes", title="An Error occurred!", keep_on_top=True)
+            sg.popup_ok("Make sure you have installed tesseract-ocr.\nIf you do, make sure you have the following files\nin the currect directory as shown:\n./assets/yolov3.cfg\n./assets/yolov3.weights\n./assets/yolov3.txt - for classes", title="An Error occurred!", keep_on_top=True)
 
     if event == "-DOBJS-":
         try:
