@@ -1,23 +1,23 @@
 # This is the module for getting image data in braille
 # That is the objects and text present in the image
 
+from collections import defaultdict
+from PIL import Image
+import numpy as np
+import pytesseract
+import cv2
+import re
+from pathlib import Path
 import os
 CURRENT_DIR = os.getcwd()
 ASSETS_DIR = os.path.join(CURRENT_DIR, "assets")
 MEDIA_DIR = os.path.join(CURRENT_DIR, "media")
 
-from pathlib import Path
 Path(MEDIA_DIR).mkdir(parents=True, exist_ok=True)
 
-import re
-import cv2
 
-import pytesseract
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-import numpy as np
-from PIL import Image
-from collections import defaultdict
 
 ASCII_WIKI = " A1B'K2L@CIF/MSP\"E3H9O6R^DJG>NTQ,*5<-U8V.%[$+X!&;:4\\0Z7(_?W]#Y)="
 BRAILLE_WIKI = "⠀⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯⠰⠱⠲⠳⠴⠵⠶⠷⠸⠹⠺⠻⠼⠽⠾⠿"
@@ -27,6 +27,7 @@ FILTER = r"[^ A-Za-z0-9.\n]+"
 PATH_TO_CONFIG = os.path.join(ASSETS_DIR, "yolov3.cfg")
 PATH_TO_WEIGHTS = os.path.join(ASSETS_DIR, "yolov3.weights")
 PATH_TO_CLASSES = os.path.join(ASSETS_DIR, "yolov3.txt")
+
 
 def filter_text(text: str):
     text = text.strip().upper()
@@ -45,7 +46,8 @@ def get_output_layers(net):
 
     layer_names = net.getLayerNames()
 
-    output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+    output_layers = [layer_names[i[0] - 1]
+                     for i in net.getUnconnectedOutLayers()]
 
     return output_layers
 
@@ -56,9 +58,10 @@ def draw_prediction(img, class_id, confidence, x, y, x_plus_w, y_plus_h, classes
 
     color = colors[class_id]
 
-    cv2.rectangle(img, (x,y), (x_plus_w,y_plus_h), color, 2)
+    cv2.rectangle(img, (x, y), (x_plus_w, y_plus_h), color, 2)
 
-    cv2.putText(img, label, (x-10,y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+    cv2.putText(img, label, (x-10, y-10),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
 
 def get_objects_from_image(image_path, config=PATH_TO_CONFIG, weights=PATH_TO_WEIGHTS, classes_path=PATH_TO_CLASSES):
@@ -78,7 +81,8 @@ def get_objects_from_image(image_path, config=PATH_TO_CONFIG, weights=PATH_TO_WE
 
     net = cv2.dnn.readNet(weights, config)
 
-    blob = cv2.dnn.blobFromImage(image, scale, (416,416), (0,0,0), True, crop=False)
+    blob = cv2.dnn.blobFromImage(
+        image, scale, (416, 416), (0, 0, 0), True, crop=False)
 
     net.setInput(blob)
 
@@ -89,7 +93,6 @@ def get_objects_from_image(image_path, config=PATH_TO_CONFIG, weights=PATH_TO_WE
     boxes = []
     conf_threshold = 0.5
     nms_threshold = 0.4
-
 
     for out in outs:
         for detection in out:
@@ -107,8 +110,8 @@ def get_objects_from_image(image_path, config=PATH_TO_CONFIG, weights=PATH_TO_WE
                 confidences.append(float(confidence))
                 boxes.append([x, y, w, h])
 
-
-    indices = cv2.dnn.NMSBoxes(boxes, confidences, conf_threshold, nms_threshold)
+    indices = cv2.dnn.NMSBoxes(
+        boxes, confidences, conf_threshold, nms_threshold)
 
     class_num = defaultdict(int)
     print("\n----------- Objects -----------")
@@ -120,20 +123,19 @@ def get_objects_from_image(image_path, config=PATH_TO_CONFIG, weights=PATH_TO_WE
         w = box[2]
         h = box[3]
         class_num[classes[class_ids[i]]] += 1
-        print(f"Class ID: {class_ids[i]}\tClass: {classes[class_ids[i]]}\tConfidence: {confidences[i]}")
-        draw_prediction(image, class_ids[i], confidences[i], round(x), round(y), round(x+w), round(y+h), classes, colors)
-
+        print(
+            f"Class ID: {class_ids[i]}\tClass: {classes[class_ids[i]]}\tConfidence: {confidences[i]}")
+        draw_prediction(image, class_ids[i], confidences[i], round(
+            x), round(y), round(x+w), round(y+h), classes, colors)
 
     # displaying image
     # cv2.imshow("object detection", image)
     # cv2.waitKey()
 
-
     # writing image
     dimg_path = os.path.join(MEDIA_DIR, "detected-objects.png")
     cv2.imwrite(dimg_path, image)
     # cv2.destroyAllWindows()
-
 
     # making objects list for writing to file
     objects = []
@@ -149,7 +151,7 @@ def get_objects_from_image(image_path, config=PATH_TO_CONFIG, weights=PATH_TO_WE
 def get_text_from_image(image_path):
     text = pytesseract.image_to_string(Image.open(image_path))
     print("----------- Detected Text -----------")
-    print(text +"\n")
+    print(text + "\n")
 
     text = "\n".join([i.strip() for i in text.split("\n") if i])
     ftext, btext = text_to_braille(text)
@@ -157,21 +159,26 @@ def get_text_from_image(image_path):
         ftext, btext = text_to_braille("No Text Detected")
 
     print("----------- Filtered Text -----------")
-    print(ftext +"\n")
+    print(ftext + "\n")
 
     print("----------- Converted to Braille Text -----------")
-    print(btext +"\n")
+    print(btext + "\n")
 
     return text, ftext, btext
 
+
 def get_text_bounding_box(image_path):
     img = cv2.imread(image_path)
-    d = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
 
-    n_boxes = len(d['level'])
-    for i in range(n_boxes):
-        (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
-        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    h, w, _ = img.shape  # assumes color image
+    # run tesseract, returning the bounding boxes
+    # also include any config options you use
+    boxes = pytesseract.image_to_boxes(img)
+    # draw the bounding boxes on the image
+    for b in boxes.splitlines():
+        b = b.split(' ')
+        img = cv2.rectangle(
+            img, (int(b[1]), h - int(b[2])), (int(b[3]), h - int(b[4])), (0, 255, 0), 2)
 
     dtext_path = os.path.join(MEDIA_DIR, "detected-text.png")
     cv2.imwrite(dtext_path, img)
@@ -196,12 +203,12 @@ def capture_image():
         cv2.imshow(window_name, frame)
 
         k = cv2.waitKey(1)
-        if k%256 == 27:
+        if k % 256 == 27:
             # ESC pressed
             print("Pressed ESCAPE, closing...")
             break
 
-        elif k%256 == 32:
+        elif k % 256 == 32:
             # SPACE pressed
             img_path = os.path.join(MEDIA_DIR, img_name)
             cv2.imwrite(img_path, frame)
