@@ -133,11 +133,13 @@ while True:  # Event Loop
             #     sg.popup_no_buttons("Please Wait...", no_titlebar=True, keep_on_top=True,
             #                         auto_close=True, non_blocking=True, auto_close_duration=1)
             text, ftext, btext = gimd.get_text_from_image(img_path)
+            dtext_path = gimd.get_text_bounding_box(img_path)
             dimg_path, objs = gimd.get_objects_from_image(img_path)
             fobj_text, bobj_text = gimd.text_to_braille(
                 '\n'.join(objs) or "No Objects Detected.")
             img_data = convert_to_bytes(dimg_path, IMG_SIZE)
-            window['-IMAGE-'].update(data=img_data)
+            dtext_data = convert_to_bytes(dtext_path, IMG_SIZE)
+            window['-IMAGE-'].update(data=dtext_data)
             window['-FTEXT-'].update(ftext)
             window['-BTEXT-'].update(btext)
             window["-WAIT-"].update("Detection Complete!")
@@ -150,6 +152,7 @@ while True:  # Event Loop
         try:
             window['-FTEXT-'].update(fobj_text)
             window['-BTEXT-'].update(bobj_text)
+            window['-IMAGE-'].update(data=img_data)
         except:
             pass
 
@@ -157,6 +160,7 @@ while True:  # Event Loop
         try:
             window['-FTEXT-'].update(ftext)
             window['-BTEXT-'].update(btext)
+            window['-IMAGE-'].update(data=dtext_data)
         except:
             pass
 
