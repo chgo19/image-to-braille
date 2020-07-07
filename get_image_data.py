@@ -35,7 +35,7 @@ def filter_text(text: str):
 
 
 def text_to_braille(text: str):
-    text = filter_text(text)
+    text = filter_text(text).strip()
     # returns filtered and translated text
     return text, text.translate(TRANSTAB)
 
@@ -130,7 +130,7 @@ def get_objects_from_image(image_path, config=PATH_TO_CONFIG, weights=PATH_TO_WE
 
 
     # writing image
-    dimg_path = os.path.join(MEDIA_DIR, "detected-objects.jpg")
+    dimg_path = os.path.join(MEDIA_DIR, "detected-objects.png")
     cv2.imwrite(dimg_path, image)
     # cv2.destroyAllWindows()
 
@@ -151,7 +151,7 @@ def get_text_from_image(image_path):
     print("----------- Detected Text -----------")
     print(text +"\n")
 
-    text = "\n".join([i for i in text.split("\n") if i])
+    text = "\n".join([i.strip() for i in text.split("\n") if i])
     ftext, btext = text_to_braille(text)
     if not ftext:
         ftext, btext = text_to_braille("No Text Detected")
@@ -163,6 +163,21 @@ def get_text_from_image(image_path):
     print(btext +"\n")
 
     return text, ftext, btext
+
+def get_text_bounding_box(image_path):
+    img = cv2.imread(image_path)
+    d = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
+
+    n_boxes = len(d['level'])
+    for i in range(n_boxes):
+        (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
+        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+    dtext_path = os.path.join(MEDIA_DIR, "detected-text.png")
+    cv2.imwrite(dtext_path, img)
+
+    return dtext_path
+
 
 def capture_image():
     img_name = "captured-image.png"
