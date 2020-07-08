@@ -129,6 +129,7 @@ while True:  # Event Loop
         try:
             print(f"Image Path: {img_path}")
             window["-WAIT-"].update("Please wait while Detecting Text and Objects...")
+            window.refresh()
             # if img_path:
             #     sg.popup_no_buttons("Please Wait...", no_titlebar=True, keep_on_top=True,
             #                         auto_close=True, non_blocking=True, auto_close_duration=1)
