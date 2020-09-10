@@ -7,6 +7,7 @@ import io
 import base64
 import pyperclip
 from time import sleep
+import pyttsx3
 
 import os
 CURRENT_DIR = os.getcwd()
@@ -87,6 +88,8 @@ layout = [
 window = sg.Window('Image to Braille', layout, grab_anywhere=True)
 img_path = ""
 
+tts = pyttsx3.init()
+
 while True:  # Event Loop
     event, values = window.read()
     print(event, values)
@@ -105,6 +108,9 @@ while True:  # Event Loop
                 window['-FTEXT-'].update(ftext)
                 window['-BTEXT-'].update(btext)
                 window["-WAIT-"].update("Image selected, press Detect to continue.")
+                window.refresh()
+                tts.say("Image selected, press Detect to continue.")
+                tts.runAndWait()
         except:
             pass
 
@@ -120,6 +126,9 @@ while True:  # Event Loop
                 window['-FTEXT-'].update(ftext)
                 window['-BTEXT-'].update(btext)
                 window["-WAIT-"].update("Image captured, press Detect to continue.")
+                window.refresh()
+                tts.say("Image captured, press Detect to continue.")
+                tts.runAndWait()
             # else:
             #     sg.popup_ok("No Image Captured!", keep_on_top=True)
         except:
@@ -130,6 +139,8 @@ while True:  # Event Loop
             print(f"Image Path: {img_path}")
             window["-WAIT-"].update("Please wait while Detecting Text and Objects...")
             window.refresh()
+            tts.say("Please wait while Detecting Text and Objects...")
+            tts.runAndWait()
             # if img_path:
             #     sg.popup_no_buttons("Please Wait...", no_titlebar=True, keep_on_top=True,
             #                         auto_close=True, non_blocking=True, auto_close_duration=1)
@@ -144,6 +155,9 @@ while True:  # Event Loop
             window['-FTEXT-'].update(ftext)
             window['-BTEXT-'].update(btext)
             window["-WAIT-"].update("Detection Complete!")
+            window.refresh()
+            tts.say("Detection Complete")
+            tts.runAndWait()
             # sg.popup_ok("Detection Complete!", keep_on_top=True)
         except:
             window["-WAIT-"].update("Detection unsuccessful!")
